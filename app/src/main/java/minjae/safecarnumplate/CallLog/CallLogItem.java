@@ -1,4 +1,4 @@
-package minjae.safecarnumplate;
+package minjae.safecarnumplate.CallLog;
 
 import android.graphics.drawable.Drawable;
 

@@ -1,4 +1,4 @@
-package minjae.safecarnumplate;
+package minjae.safecarnumplate.Activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -22,6 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import minjae.safecarnumplate.R;
 
 public class ScanActivity extends AppCompatActivity {
 
