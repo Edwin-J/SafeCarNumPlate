@@ -19,6 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity
         menu_num = (TextView) findViewById(R.id.menu_num);
 
         //setMenuImage();
-        //setMenuNum();
+        setMenuNum();
 
         adapter = new CallLogAdapter();
         list_call = (ListView) findViewById(R.id.list_call);
@@ -151,16 +152,16 @@ public class MainActivity extends AppCompatActivity
     private void setMenuNum() {
         SharedPreferences pref = getSharedPreferences("pref_num", MODE_PRIVATE);
         String string_num = pref.getString("phone_num", "");
-        if (string_num.length() > 1)
-            menu_num.setText(string_num);
+        Log.d("num", string_num);
+        menu_num.setText(string_num);
     }
 
     private void setMenuImage() {
         SharedPreferences pref = getSharedPreferences("pref_qr", MODE_PRIVATE);
         String string_qr = pref.getString("QR_Code", "");
         Bitmap bitmap_qr = StringToBitMap(string_qr);
-        if (bitmap_qr != null)
-            menu_qr.setImageBitmap(bitmap_qr);
+        Log.d("string : ", string_qr);
+        menu_qr.setImageBitmap(bitmap_qr);
     }
 
     private Bitmap StringToBitMap(String string) {
@@ -249,10 +250,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void removeCallLog(int position) {
+        // remove from adapter
         adapter.delLog(position);
         adapter.notifyDataSetChanged();
 
-        // remove from log_call txt files
+        // remove from log_call txt files - not completed
         FileOutputStream numOutputStream;
         FileOutputStream timeOutputStream;
         FileInputStream numInputStream;

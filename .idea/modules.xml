@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/SafeCarNumPlate.iml" filepath="$PROJECT_DIR$/SafeCarNumPlate.iml" />
       <module fileurl="file://C:\Users\Sunrin\Desktop\git\SafeCarNumPlate.iml" filepath="C:\Users\Sunrin\Desktop\git\SafeCarNumPlate.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\Sunrin\Desktop\git\app\app.iml" filepath="C:\Users\Sunrin\Desktop\git\app\app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/git.iml" filepath="$PROJECT_DIR$/git.iml" />
+      <module fileurl="file://C:\Users\Minjae\Desktop\SafeCarNumPlate\git.iml" filepath="C:\Users\Minjae\Desktop\SafeCarNumPlate\git.iml" />
     </modules>
   </component>
 </project>

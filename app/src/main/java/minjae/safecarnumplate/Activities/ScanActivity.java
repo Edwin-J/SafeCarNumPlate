@@ -9,9 +9,12 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -27,10 +30,8 @@ import minjae.safecarnumplate.R;
 
 public class ScanActivity extends AppCompatActivity {
 
-    private boolean CALL_PERMISSION;
-
-    public String PHONE_NUMBER = "01040849460";
-    public String CALL_TIME;
+    private String PHONE_NUMBER;
+    private String CALL_TIME;
 
     private IntentIntegrator scanner;
 
@@ -42,17 +43,10 @@ public class ScanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED)
-            CALL_PERMISSION = true;
-
-        if (!CALL_PERMISSION)
-            //make permission grant
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 1000);
-
         // show scan screen
-        IntentIntegrator scanner = new IntentIntegrator(this);
+        scanner = new IntentIntegrator(this);
+        scanner.setOrientationLocked(false);
         scanner.initiateScan();
-
 
     }
 
@@ -63,29 +57,18 @@ public class ScanActivity extends AppCompatActivity {
         // get Phone Number
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         PHONE_NUMBER = result.getContents();
+        Log.d("phone_num", "Phone Number : " + PHONE_NUMBER);
 
         // call
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int permissionResult = checkSelfPermission(Manifest.permission.CALL_PHONE);
-            if (permissionResult == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getApplicationContext(), "전화 걸기 권한을 강제로 허용합니다.", Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(ScanActivity.this, new String[] { Manifest.permission.CALL_PHONE }, 1000);
-            }
-            else {
-                ActivityCompat.requestPermissions(ScanActivity.this, new String[] { Manifest.permission.CALL_PHONE }, 1000);
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + PHONE_NUMBER));
-                startActivity(intent);
-                saveCallLog();
-                finish();
-            }
-        }
-
-        else {
-            ActivityCompat.requestPermissions(ScanActivity.this, new String[] { Manifest.permission.CALL_PHONE }, 1000);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                == PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + PHONE_NUMBER));
             startActivity(intent);
             saveCallLog();
             finish();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] { Manifest.permission.CALL_PHONE }, 44);
         }
 
     }
@@ -121,15 +104,10 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 1000) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + PHONE_NUMBER));
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    startActivity(intent);
-                    saveCallLog();
-                    finish();
-                }
-            }
-        }
+        if (requestCode == 44)
+            Toast.makeText(getApplicationContext(),
+                    "권한이 거부되었습니다", Toast.LENGTH_LONG)
+                    .show();
     }
+
 }
