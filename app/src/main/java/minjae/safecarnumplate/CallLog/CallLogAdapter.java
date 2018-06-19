@@ -81,4 +81,10 @@ public class CallLogAdapter extends BaseAdapter {
         items.clear();
     }
 
+    public String getNum(int pos) {
+        CallLogItem callLogItem = items.get(pos);
+
+        return callLogItem.getNumber();
+    }
+
 }

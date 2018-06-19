@@ -1,13 +1,16 @@
 package minjae.safecarnumplate.Activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
@@ -28,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,12 +42,16 @@ import java.io.FileWriter;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import minjae.safecarnumplate.CallLog.CallLogAdapter;
 import minjae.safecarnumplate.R;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemLongClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener, View.OnClickListener {
+
+    public String PHONE_NUMBER;
 
     private ListView list_call;
     private CallLogAdapter adapter;
@@ -77,19 +85,21 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         menu_qr = (ImageView) findViewById(R.id.menu_qr);
+        //menu_qr.setOnClickListener(this);
         menu_num = (TextView) findViewById(R.id.menu_num);
 
         //setMenuImage();
-        setMenuNum();
+        //setMenuNum();
 
         adapter = new CallLogAdapter();
         list_call = (ListView) findViewById(R.id.list_call);
         takeCallLog();
         list_call.setAdapter(adapter);
+        list_call.setOnItemClickListener(this);
         list_call.setOnItemLongClickListener(this);
 
         Intent intent = new Intent(this, ScanActivity.class);
-        startActivity(intent);
+        //startActivity(intent);
 
     }
 
@@ -229,6 +239,58 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        try {
+            PHONE_NUMBER = adapter.getNum(position);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + PHONE_NUMBER));
+                startActivity(intent);
+                saveCallLog();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[] { Manifest.permission.CALL_PHONE }, 44);
+            }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "알 수 없는 전화번호입니다.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void saveCallLog() {
+        // make internal directory
+        String dirPath = getFilesDir().getAbsolutePath();
+        File file = new File(dirPath);
+        if (!file.exists())
+            file.mkdirs();
+
+        // save time, number information
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String CALL_TIME = simpleDateFormat.format(date);
+        File file_call_time = new File(dirPath + "/log_call_time.txt");
+        File file_call_num = new File(dirPath + "/log_call_num.txt");
+        try {
+            FileOutputStream timeOutputStream = openFileOutput("log_call_time.txt", Context.MODE_APPEND);
+            timeOutputStream.write((CALL_TIME + "\r\n").getBytes());
+            timeOutputStream.close();
+
+            FileOutputStream numOutputStream = openFileOutput("log_call_num.txt", Context.MODE_APPEND);
+            numOutputStream.write((PHONE_NUMBER + "\r\n").getBytes());
+            numOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

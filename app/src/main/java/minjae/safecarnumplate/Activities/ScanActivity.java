@@ -57,7 +57,6 @@ public class ScanActivity extends AppCompatActivity {
         // get Phone Number
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         PHONE_NUMBER = result.getContents();
-        Log.d("phone_num", "Phone Number : " + PHONE_NUMBER);
 
         // call
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)

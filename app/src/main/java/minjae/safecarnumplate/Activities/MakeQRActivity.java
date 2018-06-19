@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +22,10 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Base64;
 import java.util.Hashtable;
 
@@ -33,6 +38,7 @@ public class MakeQRActivity extends AppCompatActivity implements View.OnClickLis
 
     private ImageView image_qr;
     private Button btn_share;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +63,7 @@ public class MakeQRActivity extends AppCompatActivity implements View.OnClickLis
             Hashtable hints = new Hashtable();
             hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
 
-            BitMatrix bitMatrix = writer.encode(context, BarcodeFormat.QR_CODE, 300, 300, hints);
+            BitMatrix bitMatrix = writer.encode(context, BarcodeFormat.QR_CODE, 1500, 1500, hints);
             BarcodeEncoder encoder = new BarcodeEncoder();
             QR_CODE = encoder.createBitmap(bitMatrix);
 
@@ -89,14 +95,21 @@ public class MakeQRActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        if (v == R.id.btn_share_qr) {
-            String qrPath = MediaStore.Images.Media.insertImage(getContentResolver(), QR_CODE, "qr_Code", null);
-            Uri qrUri = Uri.parse(qrPath);
-            // share QR Code
-            Intent intent = new intent(Intent.ACTION_SEND);
-            intent.setType("image/png");
-            intent.putExtra(Intent.EXTRA_STREAM, qrUri);
-            startActivity(Intent.createChooser(intent, "공유하기!"));
-        }
+        int id = v.getId();
+        if (id == R.id.btn_share_qr)
+            ShareQR();
     }
+
+    private void ShareQR() {
+        File dirName = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/Download");
+        String string_file = "QR_Code.png";
+        File file = new File(dirName, string_file);
+        Uri uri = Uri.fromFile(file);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/png");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(Intent.createChooser(intent, "공유하기!"));
+
+    }
+
 }
