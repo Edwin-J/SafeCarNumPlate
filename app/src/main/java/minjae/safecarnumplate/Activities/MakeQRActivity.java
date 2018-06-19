@@ -2,10 +2,15 @@ package minjae.safecarnumplate.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.UriMatcher;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.zxing.BarcodeFormat;
@@ -21,12 +26,13 @@ import java.util.Hashtable;
 
 import minjae.safecarnumplate.R;
 
-public class MakeQRActivity extends AppCompatActivity {
+public class MakeQRActivity extends AppCompatActivity implements View.OnClickListener {
 
     public String PHONE_NUMBER;
     public Bitmap QR_CODE = null;
 
     private ImageView image_qr;
+    private Button btn_share;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,8 @@ public class MakeQRActivity extends AppCompatActivity {
         setContentView(R.layout.activity_make_qr);
 
         image_qr = (ImageView) findViewById(R.id.result_qr);
+        btn_share = (Button) findViewById(R.id.btn_share_qr);
+        btn_share.setOnClickListener(this);
 
         Intent intent = getIntent();
         PHONE_NUMBER = intent.getExtras().getString("phone_num");
@@ -79,4 +87,16 @@ public class MakeQRActivity extends AppCompatActivity {
         return string;
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v == R.id.btn_share_qr) {
+            String qrPath = MediaStore.Images.Media.insertImage(getContentResolver(), QR_CODE, "qr_Code", null);
+            Uri qrUri = Uri.parse(qrPath);
+            // share QR Code
+            Intent intent = new intent(Intent.ACTION_SEND);
+            intent.setType("image/png");
+            intent.putExtra(Intent.EXTRA_STREAM, qrUri);
+            startActivity(Intent.createChooser(intent, "공유하기!"));
+        }
+    }
 }
