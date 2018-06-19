@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.net.Uri;
 import android.os.Environment;
@@ -51,10 +52,18 @@ public class MakeQRActivity extends AppCompatActivity implements View.OnClickLis
         btn_share.setOnClickListener(this);
 
         Intent intent = getIntent();
-        PHONE_NUMBER = intent.getExtras().getString("phone_num");
+        try {
+            PHONE_NUMBER = intent.getExtras().getString("phone_num");
+            makeQRCode(PHONE_NUMBER);
+            image_qr.setImageBitmap(QR_CODE);
+        } catch (NullPointerException ne) {
+            SharedPreferences pref = getSharedPreferences("pref_qr", MODE_PRIVATE);
+            String string_qr = pref.getString("QR_Code", "");
+            Bitmap bitmap_qr = StringToBitMap(string_qr);
+            Log.d("string", string_qr);
+            image_qr.setImageBitmap(bitmap_qr);
+        }
 
-        makeQRCode(PHONE_NUMBER);
-        image_qr.setImageBitmap(QR_CODE);
     }
 
     private void makeQRCode(String context) {
@@ -85,6 +94,17 @@ public class MakeQRActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
 
+    }
+
+    private Bitmap StringToBitMap(String string) {
+        try {
+            byte[] bytes = android.util.Base64.decode(string, android.util.Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
     }
 
     private String BitmapToString(Bitmap bitmap) {

@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         menu_qr = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.menu_qr);
-        //menu_qr.setOnClickListener(this);
+        menu_qr.setOnClickListener(this);
         menu_num = (TextView) navigationView.getHeaderView(0).findViewById(R.id.menu_num);
 
         try {
@@ -248,7 +248,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-
+        Intent intent = new Intent(getApplicationContext(), MakeQRActivity.class);
+        startActivity(intent);
     }
 
     @Override
