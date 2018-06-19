@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -79,6 +80,7 @@ public class MakeQRActivity extends AppCompatActivity implements View.OnClickLis
             editor_num.putString("phone_num", PHONE_NUMBER);
             editor_num.apply();
 
+            Log.d("Make QR Code", "QR Code is successfully created!");
         } catch (WriterException e) {
             e.printStackTrace();
         }

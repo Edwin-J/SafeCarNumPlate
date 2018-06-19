@@ -84,12 +84,17 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        menu_qr = (ImageView) findViewById(R.id.menu_qr);
+        menu_qr = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.menu_qr);
         //menu_qr.setOnClickListener(this);
-        menu_num = (TextView) findViewById(R.id.menu_num);
+        menu_num = (TextView) navigationView.getHeaderView(0).findViewById(R.id.menu_num);
 
-        //setMenuImage();
-        //setMenuNum();
+        try {
+            setMenuImage();
+            setMenuNum();
+        } catch (NullPointerException ne) {
+            Log.d("NullPointer Error", "NullPointerException");
+        }
+
 
         adapter = new CallLogAdapter();
         list_call = (ListView) findViewById(R.id.list_call);
@@ -170,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences pref = getSharedPreferences("pref_qr", MODE_PRIVATE);
         String string_qr = pref.getString("QR_Code", "");
         Bitmap bitmap_qr = StringToBitMap(string_qr);
-        Log.d("string : ", string_qr);
+        Log.d("string", string_qr);
         menu_qr.setImageBitmap(bitmap_qr);
     }
 
