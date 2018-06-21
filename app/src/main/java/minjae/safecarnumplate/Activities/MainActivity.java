@@ -108,142 +108,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void takeCallLog() {
-        String call_time;
-        String call_num;
-        try {
-            timeInputStream = openFileInput("log_call_time.txt");
-            numInputStream = openFileInput("log_call_num.txt");
-            BufferedReader timeReader = new BufferedReader(new InputStreamReader(timeInputStream));
-            BufferedReader numReader = new BufferedReader(new InputStreamReader(numInputStream));
-            call_time = timeReader.readLine();
-            call_num = numReader.readLine();
-            while (call_time != null || call_num != null) {
-                // add to listview
-                adapter.addLog(
-                        ContextCompat.getDrawable(this, R.mipmap.ic_launcher_round),
-                        call_num, call_time
-                );
-                call_time = timeReader.readLine();
-                call_num = numReader.readLine();
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void makeQRDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("QR코드 생성하기");
-        builder.setMessage("전화번호를 입력하세요.");
-
-        final EditText editText = new EditText(MainActivity.this);
-        // set inputType="number"
-        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        // set maxLength="12"
-        InputFilter[] inputFilters = new InputFilter[1];
-        inputFilters[0] = new InputFilter.LengthFilter(12);
-        editText.setFilters(inputFilters);
-        // set multiline="true"
-        editText.setSingleLine();
-
-        builder.setView(editText)
-                .setPositiveButton("생성!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getApplicationContext(), MakeQRActivity.class);
-                        intent.putExtra("phone_num", editText.getText().toString());
-                        startActivity(intent);
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton("취소", null)
-                .show();
-    }
-
-    private void setMenuNum() {
-        SharedPreferences pref = getSharedPreferences("pref_num", MODE_PRIVATE);
-        String string_num = pref.getString("phone_num", "");
-        Log.d("num", string_num);
-        menu_num.setText(string_num);
-    }
-
-    private void setMenuImage() {
-        SharedPreferences pref = getSharedPreferences("pref_qr", MODE_PRIVATE);
-        String string_qr = pref.getString("QR_Code", "");
-        Bitmap bitmap_qr = StringToBitMap(string_qr);
-        Log.d("string", string_qr);
-        menu_qr.setImageBitmap(bitmap_qr);
-    }
-
-    private Bitmap StringToBitMap(String string) {
-        try {
-            byte[] bytes = Base64.decode(string, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            return bitmap;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
-    }
-
+    // set menu after created QR
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        // refresh listview
-        if (id == R.id.menu_refresh) {
-            adapter.clear();
-            takeCallLog();
-            adapter.notifyDataSetChanged();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_scan) {
-            Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_make) {
-            makeQRDialog();
-        } else if (id == R.id.nav_log) {
-
-        } else if (id == R.id.nav_share) {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("image/png");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("C:\\Users\\Minjae\\Desktop\\SafeCarNumPlate\\app\\src\\main\\res\\drawable\\ic_launcher_background.xml"));
-            intent.setPackage("com.kakao.talk");
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    protected void onPostResume() {
+        super.onPostResume();
+        setMenuImage();
+        setMenuNum();
     }
 
     @Override
@@ -267,35 +137,6 @@ public class MainActivity extends AppCompatActivity
             }
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "알 수 없는 전화번호입니다.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void saveCallLog() {
-        // make internal directory
-        String dirPath = getFilesDir().getAbsolutePath();
-        File file = new File(dirPath);
-        if (!file.exists())
-            file.mkdirs();
-
-        // save time, number information
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String CALL_TIME = simpleDateFormat.format(date);
-        File file_call_time = new File(dirPath + "/log_call_time.txt");
-        File file_call_num = new File(dirPath + "/log_call_num.txt");
-        try {
-            FileOutputStream timeOutputStream = openFileOutput("log_call_time.txt", Context.MODE_APPEND);
-            timeOutputStream.write((CALL_TIME + "\r\n").getBytes());
-            timeOutputStream.close();
-
-            FileOutputStream numOutputStream = openFileOutput("log_call_num.txt", Context.MODE_APPEND);
-            numOutputStream.write((PHONE_NUMBER + "\r\n").getBytes());
-            numOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -359,6 +200,171 @@ public class MainActivity extends AppCompatActivity
             timeOutputStream = openFileOutput("log_call_time.txt", Context.MODE_PRIVATE);
             timeOutputStream.write((logs_time).getBytes());
             timeOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void takeCallLog() {
+        String call_time;
+        String call_num;
+        try {
+            timeInputStream = openFileInput("log_call_time.txt");
+            numInputStream = openFileInput("log_call_num.txt");
+            BufferedReader timeReader = new BufferedReader(new InputStreamReader(timeInputStream));
+            BufferedReader numReader = new BufferedReader(new InputStreamReader(numInputStream));
+            call_time = timeReader.readLine();
+            call_num = numReader.readLine();
+            while (call_time != null || call_num != null) {
+                // add to list
+                adapter.addLog(
+                        ContextCompat.getDrawable(this, R.mipmap.ic_launcher_round),
+                        call_num, call_time
+                );
+                call_time = timeReader.readLine();
+                call_num = numReader.readLine();
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void makeQRDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("QR코드 생성하기");
+        builder.setMessage("전화번호를 입력하세요.");
+
+        final EditText editText = new EditText(MainActivity.this);
+        // set inputType="number"
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        // set maxLength="12"
+        InputFilter[] inputFilters = new InputFilter[1];
+        inputFilters[0] = new InputFilter.LengthFilter(12);
+        editText.setFilters(inputFilters);
+        // set multiLine="true"
+        editText.setSingleLine();
+
+        builder.setView(editText)
+                .setPositiveButton("생성!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getApplicationContext(), MakeQRActivity.class);
+                        intent.putExtra("phone_num", editText.getText().toString());
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("취소", null)
+                .show();
+    }
+
+    private void setMenuNum() {
+        SharedPreferences pref = getSharedPreferences("pref_num", MODE_PRIVATE);
+        String string_num = pref.getString("phone_num", "");
+        Log.d("num", string_num);
+        menu_num.setText(string_num);
+    }
+
+    private void setMenuImage() {
+        SharedPreferences pref = getSharedPreferences("pref_qr", MODE_PRIVATE);
+        String string_qr = pref.getString("QR_Code", "");
+        Bitmap bitmap_qr = StringToBitMap(string_qr);
+        Log.d("string", string_qr);
+        menu_qr.setImageBitmap(bitmap_qr);
+    }
+
+    private Bitmap StringToBitMap(String string) {
+        try {
+            byte[] bytes = Base64.decode(string, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // refresh list
+        if (id == R.id.menu_refresh) {
+            adapter.clear();
+            takeCallLog();
+            adapter.notifyDataSetChanged();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_scan) {
+            Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_make) {
+            makeQRDialog();
+        } else if (id == R.id.nav_share) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("image/png");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("C:\\Users\\Minjae\\Desktop\\SafeCarNumPlate\\app\\src\\main\\res\\drawable\\ic_launcher_background.xml"));
+            intent.setPackage("com.kakao.talk");
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void saveCallLog() {
+        // make internal directory
+        String dirPath = getFilesDir().getAbsolutePath();
+        File file = new File(dirPath);
+        if (!file.exists())
+            file.mkdirs();
+
+        // save time, number information
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String CALL_TIME = simpleDateFormat.format(date);
+        File file_call_time = new File(dirPath + "/log_call_time.txt");
+        File file_call_num = new File(dirPath + "/log_call_num.txt");
+        try {
+            FileOutputStream timeOutputStream = openFileOutput("log_call_time.txt", Context.MODE_APPEND);
+            timeOutputStream.write((CALL_TIME + "\r\n").getBytes());
+            timeOutputStream.close();
+
+            FileOutputStream numOutputStream = openFileOutput("log_call_num.txt", Context.MODE_APPEND);
+            numOutputStream.write((PHONE_NUMBER + "\r\n").getBytes());
+            numOutputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

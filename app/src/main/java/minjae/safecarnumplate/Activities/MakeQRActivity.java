@@ -1,5 +1,6 @@
 package minjae.safecarnumplate.Activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriMatcher;
@@ -33,7 +34,7 @@ import java.util.Hashtable;
 
 import minjae.safecarnumplate.R;
 
-public class MakeQRActivity extends AppCompatActivity implements View.OnClickListener {
+public class MakeQRActivity extends Activity implements View.OnClickListener {
 
     public String PHONE_NUMBER;
     public Bitmap QR_CODE = null;
@@ -124,6 +125,9 @@ public class MakeQRActivity extends AppCompatActivity implements View.OnClickLis
 
     private void ShareQR() {
         File dirName = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/Download");
+        if (!dirName.exists()){
+            dirName.mkdir();
+        }
         String string_file = "QR_Code.png";
         File file = new File(dirName, string_file);
         Uri uri = Uri.fromFile(file);

@@ -2,22 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="240dip"
+    android:layout_height="360dip"
     tools:context="minjae.safecarnumplate.Activities.MakeQRActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryDark">
 
     <ImageView
         android:id="@+id/result_qr"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:src="@mipmap/ic_launcher"
         />
 
     <Button
         android:id="@+id/btn_share_qr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="공유하기!"
+        android:layout_weight="1"
+        android:text="@string/share_qr"
+        android:backgroundTint="@color/colorPrimary"
         />
 
 </LinearLayout>

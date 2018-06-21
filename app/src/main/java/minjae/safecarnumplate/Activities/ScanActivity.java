@@ -103,10 +103,17 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 44)
-            Toast.makeText(getApplicationContext(),
-                    "권한이 거부되었습니다", Toast.LENGTH_LONG)
-                    .show();
+        if (requestCode == 44) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + PHONE_NUMBER));
+                startActivity(intent);
+                saveCallLog();
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 }

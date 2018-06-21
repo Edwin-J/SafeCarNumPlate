@@ -6,29 +6,28 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_scan"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Scan QRCode" />
-        <item
-            android:id="@+id/nav_log"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Call Log" />
+            android:icon="@drawable/ic_scan_qr"
+            android:title="@string/menu_scan" />
         <item
             android:id="@+id/nav_make"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Make My QRCode" />
-
+            android:icon="@drawable/ic_create_qr"
+            android:title="@string/menu_make" />
+        <item
+            android:id="@+id/nav_log"
+            android:icon="@drawable/ic_call_log"
+            android:title="@string/menu_log" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/menu_title">
         <menu>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="@string/menu_share" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="@string/menu_send" />
         </menu>
     </item>
 
