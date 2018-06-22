@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity
 
     private ImageView menu_qr;
     private TextView menu_num;
+
+    private Bitmap QR_CODE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,9 +277,38 @@ public class MainActivity extends AppCompatActivity
     private void setMenuImage() {
         SharedPreferences pref = getSharedPreferences("pref_qr", MODE_PRIVATE);
         String string_qr = pref.getString("QR_Code", "");
-        Bitmap bitmap_qr = StringToBitMap(string_qr);
+        QR_CODE = StringToBitMap(string_qr);
         Log.d("string", string_qr);
-        menu_qr.setImageBitmap(bitmap_qr);
+        menu_qr.setImageBitmap(QR_CODE);
+    }
+
+    private void saveCallLog() {
+        // make internal directory
+        String dirPath = getFilesDir().getAbsolutePath();
+        File file = new File(dirPath);
+        if (!file.exists())
+            file.mkdirs();
+
+        // save time, number information
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String CALL_TIME = simpleDateFormat.format(date);
+        File file_call_time = new File(dirPath + "/log_call_time.txt");
+        File file_call_num = new File(dirPath + "/log_call_num.txt");
+        try {
+            FileOutputStream timeOutputStream = openFileOutput("log_call_time.txt", Context.MODE_APPEND);
+            timeOutputStream.write((CALL_TIME + "\r\n").getBytes());
+            timeOutputStream.close();
+
+            FileOutputStream numOutputStream = openFileOutput("log_call_num.txt", Context.MODE_APPEND);
+            numOutputStream.write((PHONE_NUMBER + "\r\n").getBytes());
+            numOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Bitmap StringToBitMap(String string) {
@@ -330,12 +363,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_make) {
             makeQRDialog();
         } else if (id == R.id.nav_share) {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("image/png");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("C:\\Users\\Minjae\\Desktop\\SafeCarNumPlate\\app\\src\\main\\res\\drawable\\ic_launcher_background.xml"));
-            intent.setPackage("com.kakao.talk");
+            // share app
         } else if (id == R.id.nav_send) {
-
+            ShareQR();
         }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -343,33 +373,33 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void saveCallLog() {
-        // make internal directory
-        String dirPath = getFilesDir().getAbsolutePath();
-        File file = new File(dirPath);
-        if (!file.exists())
-            file.mkdirs();
-
-        // save time, number information
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String CALL_TIME = simpleDateFormat.format(date);
-        File file_call_time = new File(dirPath + "/log_call_time.txt");
-        File file_call_num = new File(dirPath + "/log_call_num.txt");
-        try {
-            FileOutputStream timeOutputStream = openFileOutput("log_call_time.txt", Context.MODE_APPEND);
-            timeOutputStream.write((CALL_TIME + "\r\n").getBytes());
-            timeOutputStream.close();
-
-            FileOutputStream numOutputStream = openFileOutput("log_call_num.txt", Context.MODE_APPEND);
-            numOutputStream.write((PHONE_NUMBER + "\r\n").getBytes());
-            numOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void ShareQR() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("image/*");
+            String dataUrl = MediaStore.Images.Media.insertImage(getContentResolver(), QR_CODE, "QR Code", "");
+            intent.putExtra(Intent.EXTRA_STREAM, dataUrl);
+            startActivity(Intent.createChooser(intent, "공유하기"));
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 44);
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 44) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("image/*");
+                String dataUrl = MediaStore.Images.Media.insertImage(getContentResolver(), QR_CODE, "QR Code", "");
+                intent.putExtra(Intent.EXTRA_STREAM, dataUrl);
+                startActivity(Intent.createChooser(intent, "공유하기"));
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }
