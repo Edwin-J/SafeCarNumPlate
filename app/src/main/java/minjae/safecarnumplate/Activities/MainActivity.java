@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
         list_call.setOnItemLongClickListener(this);
 
         Intent intent = new Intent(this, ScanActivity.class);
-        startActivity(intent);
+        //startActivity(intent);
 
     }
 

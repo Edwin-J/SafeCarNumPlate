@@ -6,7 +6,7 @@
     android:layout_height="360dip"
     tools:context="minjae.safecarnumplate.Activities.MakeQRActivity"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/colorPrimary">
 
     <ImageView
         android:id="@+id/result_qr"
