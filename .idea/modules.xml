@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CNP.iml" filepath="$PROJECT_DIR$/CNP.iml" />
+      <module fileurl="file://C:\Users\Sunrin\Desktop\SCP\CNP.iml" filepath="C:\Users\Sunrin\Desktop\SCP\CNP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SCP.iml" filepath="$PROJECT_DIR$/SCP.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Sunrin\Desktop\SCP\app\app.iml" filepath="C:\Users\Sunrin\Desktop\SCP\app\app.iml" />
     </modules>
   </component>
 </project>

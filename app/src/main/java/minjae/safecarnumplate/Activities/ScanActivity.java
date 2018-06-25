@@ -19,13 +19,17 @@ import android.widget.Toolbar;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import minjae.safecarnumplate.CallLog.CallLogAdapter;
 import minjae.safecarnumplate.R;
 
 public class ScanActivity extends AppCompatActivity {

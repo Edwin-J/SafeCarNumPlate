@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
+    private File file_call_time;
+    private File file_call_num;
     private FileInputStream timeInputStream;
     private FileInputStream numInputStream;
 
@@ -108,7 +111,7 @@ public class MainActivity extends AppCompatActivity
         list_call.setOnItemLongClickListener(this);
 
         Intent intent = new Intent(this, ScanActivity.class);
-        //startActivity(intent);
+        startActivity(intent);
 
     }
 
@@ -224,7 +227,7 @@ public class MainActivity extends AppCompatActivity
             while (call_time != null || call_num != null) {
                 // add to list
                 adapter.addLog(
-                        ContextCompat.getDrawable(this, R.mipmap.ic_launcher_round),
+                        ContextCompat.getDrawable(this, R.drawable.ic_scan_qr),
                         call_num, call_time
                 );
                 call_time = timeReader.readLine();
@@ -347,6 +350,12 @@ public class MainActivity extends AppCompatActivity
             adapter.clear();
             takeCallLog();
             adapter.notifyDataSetChanged();
+        } else if (id == R.id.menu_clear) {
+//            adapter.clear();
+//            file_call_time.delete();
+//            file_call_num.delete();
+//            takeCallLog();
+//            adapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);
@@ -378,6 +387,7 @@ public class MainActivity extends AppCompatActivity
                 == PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("image/*");
+            Log.e("TAG", "ShareQR: " + (QR_CODE == null));
             String dataUrl = MediaStore.Images.Media.insertImage(getContentResolver(), QR_CODE, "QR Code", "");
             intent.putExtra(Intent.EXTRA_STREAM, dataUrl);
             startActivity(Intent.createChooser(intent, "공유하기"));
@@ -394,6 +404,7 @@ public class MainActivity extends AppCompatActivity
                     == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("image/*");
+
                 String dataUrl = MediaStore.Images.Media.insertImage(getContentResolver(), QR_CODE, "QR Code", "");
                 intent.putExtra(Intent.EXTRA_STREAM, dataUrl);
                 startActivity(Intent.createChooser(intent, "공유하기"));

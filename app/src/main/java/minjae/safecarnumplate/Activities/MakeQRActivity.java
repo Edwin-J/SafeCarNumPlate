@@ -85,6 +85,7 @@ public class MakeQRActivity extends Activity implements View.OnClickListener {
             BarcodeEncoder encoder = new BarcodeEncoder();
             QR_CODE = encoder.createBitmap(bitMatrix);
 
+
             // save QR Code to SharedPreferences
             String string_qr = BitmapToString(QR_CODE);
             SharedPreferences pref_qr = getSharedPreferences("pref_qr", MODE_PRIVATE);
@@ -140,6 +141,7 @@ public class MakeQRActivity extends Activity implements View.OnClickListener {
                 == PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("image/*");
+            Log.e("TAG", "ShareQR: " + (QR_CODE == null));
             String dataUrl = MediaStore.Images.Media.insertImage(getContentResolver(), QR_CODE, "QR Code", "");
             intent.putExtra(Intent.EXTRA_STREAM, dataUrl);
             startActivity(Intent.createChooser(intent, "공유하기"));
